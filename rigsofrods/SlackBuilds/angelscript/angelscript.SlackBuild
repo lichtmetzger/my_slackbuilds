@@ -1,0 +1,79 @@
+#!/bin/sh
+
+# Slackware build script for angelscript
+
+# Written by Danny Schmarsel <danny@schmarsel.de>
+
+PRGNAM=angelscript
+VERSION=${VERSION:-2.31.2}
+BUILD=${BUILD:-1}
+TAG=${TAG:-_sm}
+
+if [ -z "$ARCH" ]; then
+  case "$( uname -m )" in
+    i?86) ARCH=i486 ;;
+    arm*) ARCH=arm ;;
+       *) ARCH=$( uname -m ) ;;
+  esac
+fi
+
+CWD=$(pwd)
+TMP=${TMP:-/tmp/SBo}
+PKG=$TMP/package-$PRGNAM
+OUTPUT=${OUTPUT:-/tmp}
+
+if [ "$ARCH" = "i486" ]; then
+  SLKCFLAGS="-O2 -march=i486 -mtune=i686"
+  LIBDIRSUFFIX=""
+elif [ "$ARCH" = "i686" ]; then
+  SLKCFLAGS="-O2 -march=i686 -mtune=i686"
+  LIBDIRSUFFIX=""
+elif [ "$ARCH" = "x86_64" ]; then
+  SLKCFLAGS="-O2 -fPIC"
+  SLKLDFLAGS="-L/usr/lib64"; LIBDIRSUFFIX="64"
+else
+  SLKCFLAGS="-O2"
+  LIBDIRSUFFIX=""
+fi
+
+set -e
+
+rm -rf $PKG
+mkdir -p $TMP $PKG $OUTPUT
+cd $TMP
+#create subdirectory, we don't want to mess up /tmp
+rm -rf $PRGNAM-$VERSION
+mkdir $PRGNAM-$VERSION
+cd $PRGNAM-$VERSION
+unzip $CWD/${PRGNAM}_${VERSION}.zip
+chown -R root:root .
+find -L . \
+ \( -perm 777 -o -perm 775 -o -perm 750 -o -perm 711 -o -perm 555 -o -perm 511 \) \
+ -exec chmod 755 {} \; -o \
+ \( -perm 666 -o -perm 664 -o -perm 600 -o -perm 444 -o -perm 440 -o -perm 400 \) \
+ -exec chmod 644 {} \;
+
+# Fix build errors
+mkdir -p $PKG/usr/lib${LIBDIRSUFFIX}
+mkdir -p $PKG/usr/include
+cd sdk/angelscript/projects/gnuc
+
+# Fix build on 64bit
+if [ "$ARCH" = "x86_64" ]; then
+sed -i '34 s/lib/lib64\//' Makefile
+fi
+
+make
+make PREFIX=/usr DESTDIR=$PKG SHARED=1 VERSION=${VERSION} install
+
+find $PKG | xargs file | grep -e "executable" -e "shared object" | grep ELF \
+  | cut -f 1 -d : | xargs strip --strip-unneeded 2> /dev/null || true
+
+mkdir -p $PKG/usr/doc/$PRGNAM-$VERSION
+cat $CWD/$PRGNAM.SlackBuild > $PKG/usr/doc/$PRGNAM-$VERSION/$PRGNAM.SlackBuild
+
+mkdir -p $PKG/install
+cat $CWD/slack-desc > $PKG/install/slack-desc
+
+cd $PKG
+/sbin/makepkg -l y -c n $OUTPUT/$PRGNAM-$VERSION-$ARCH-$BUILD$TAG.${PKGTYPE:-txz}

@@ -1,0 +1,19 @@
+<h1>Obsolete. Please use <a href="https://schmatzler.de/en/2016/07/21/bye-banshee-rhythmbox-auf-slackware64-14-2/">Rhythmbox</a>.</h1>
+<br><br>
+One-shot install command for slapt-get:
+<br>
+<code>slapt-get --update && slapt-get --install ORBit2 avahi banshee banshee-community-extensions boo cracklib dbus-sharp dbus-sharp-glib gdata-sharp gio-sharp gkeyfile-sharp gnome-disk-utility gstreamer1 gst-plugins-base1 gst-plugins-good1 gst-plugins-bad1 gst-plugins-ugly1 gst-libav1 gtk-sharp gtk-sharp-beans gudev-sharp lame libgdiplus libgpod-sharp libmodplug libpwquality libunique libwebp mono mono-addins mono-zeroconf newtonsoft-json soundtouch taglib-sharp taoframework webkitgtk</code>
+<br><br>
+If you can't get the Youtube plugin to work, you have to import Googles certificate first with:<br>
+<code>mozroots --import --sync</code>
+<br><br>
+If you have missing icons, add the lines
+<br><code>gtk-icon-theme-name="Adwaita"<br>
+gtk-fallback-icon-theme = "Tango"</code><br>
+to your ~/.gtkrc-2.0
+<br><br>
+If you want iOS support, make sure that the usbmuxd user exists in /etc/passwd.
+<br><br>
+Packages work with slackware64-current and are kept up-to-date on a regular basis. Enjoy!
+<br><br>
+<a href="http://www.linuxquestions.org/questions/slackware-14/banshee-2-4-0-for-slackware-current-936386/page3.html#post5351500">Discussion on Linuxquestions.org</a>

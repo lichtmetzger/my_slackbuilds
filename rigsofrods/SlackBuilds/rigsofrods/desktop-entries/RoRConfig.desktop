@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Encoding=UTF-8
+Name=Rigs of Rods (config)
+Comment=Configuration utility for Rigs of Rods
+Icon=RoRConfig.png
+Exec=/usr/games/rigsofrods/RoRConfig
+Terminal=false
+Categories=Application;Game;

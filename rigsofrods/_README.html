@@ -1,0 +1,15 @@
+<p>"Rigs of Rods" for Slackware64 -current</p>
+<p>Add this to slapt-getrc:</p>
+<pre>SOURCE=https://schmatzler.de/my_slackbuilds/rigsofrods/:OFFICIAL</pre>
+<p>Install the packages:</p>
+<pre>slapt-get --install FreeImage MyGUI MySocketW OpenAL angelscript nvidia-cg-toolkit ogre ogre-caelum ogre-pagedgeometry ois rigsofrods wxGTK3 zziplib</pre>
+---
+<p>Edit <i>/etc/slackpkg/slackpkgplus.conf</i> and make sure you <b>alter</b> REPOPLUS and <b>add</b> MIRRORPLUS to create a new repository 'slackror':</p>
+<pre>REPOPLUS=( slackpkgplus slackror )
+MIRRORPLUS['slackror']=http://schmatzler.de/my_slackbuilds/rigsofrods/</pre>
+<p>Then install it:</p>
+<pre>slackpkg install slackror</pre>
+<p>Before starting the game, you'll have to set up the basic directory and add content like vehicles, terrains etc.:</p>
+<pre>wget http://schmatzler.de/my_slackbuilds/rigsofrods/contentpacks/pack_contentpack04.zip
+mkdir $HOME/.rigsofrods/packs/
+unzip pack_contentpack04.zip -d $HOME/.rigsofrods/packs/</pre>

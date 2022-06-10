@@ -1,0 +1,177 @@
+From e482d2592bd583dd954509d6705a5c8c900dce38 Mon Sep 17 00:00:00 2001
+From: Tim Cuthbertson <tim@gfxmonk.net>
+Date: Sat, 2 Apr 2016 15:35:53 +1100
+Subject: [PATCH 1/2] add "Enable Equalizer" menu group toggle
+
+---
+ equalizer/Conf.py                | 40 ++++++++++++++++++++++++++++------------
+ equalizer/ConfDialog.py          | 12 ++++++++++++
+ equalizer/equalizer_rb3compat.py |  6 +++++-
+ 3 files changed, 45 insertions(+), 13 deletions(-)
+
+diff --git a/equalizer/Conf.py b/equalizer/Conf.py
+index 86debe1..3ef89c4 100644
+--- a/equalizer/Conf.py
++++ b/equalizer/Conf.py
+@@ -17,10 +17,13 @@
+ # You should have received a copy of the GNU General Public License
+ # along with this program.  If not, see <http://www.gnu.org/licenses/>
+ 
++
++import gi; gi.require_version('GConf', '2.0')
+ from gi.repository import GConf, Gst
+ 
+ EQUALIZER_GCONF_PREFIX = '/apps/rhythmbox/plugins/equalizer'
+ EQUALIZER_PRESET = 'preset'
++EQUALIZER_ENABLED = 'enabled'
+ 
+ class Config:
+   def __init__(self):
+@@ -44,6 +47,10 @@ class Config:
+       for i in range(0, 10):
+         self.gconf.set_float(self.make_path(self.gconf_keys[i], 'default'), self.config[i])
+ 
++    self.enabled = self.gconf.get_bool(EQUALIZER_GCONF_PREFIX+'/'+EQUALIZER_ENABLED)
++    if self.enabled is None:
++      self.enabled = True
++
+     if self.gconf.get_string(EQUALIZER_GCONF_PREFIX+'/'+EQUALIZER_PRESET):
+       self.preset = self.gconf.get_string(EQUALIZER_GCONF_PREFIX+'/'+EQUALIZER_PRESET)
+     else:
+@@ -70,15 +77,24 @@ class Config:
+         self.config[i] = self.read_value(preset, self.gconf_keys[i], self.config[i])
+ 
+   def apply_settings(self, eq):
+-    for i in range(0, 10):
+-      eq.set_property('band' + repr(i), self.config[i])
++    import sys
++    if self.enabled:
++      for i in range(0, 10):
++        eq.set_property('band' + repr(i), self.config[i])
++    else:
++      for i in range(0, 10):
++        eq.set_property('band' + repr(i), 0.0)
+ 
+   def write_settings(self):
+     preset = self.preset
+     self.gconf.set_string(EQUALIZER_GCONF_PREFIX+'/'+EQUALIZER_PRESET, preset)
++    self._write_enabled()
+     for i in range(0, 10):
+       self.gconf.set_float(self.make_path(self.gconf_keys[i], preset), self.config[i])
+ 
++  def _write_enabled(self):
++    self.gconf.set_bool(EQUALIZER_GCONF_PREFIX+'/'+EQUALIZER_ENABLED, self.enabled)
++
+   def make_path(self, path, preset):
+     return EQUALIZER_GCONF_PREFIX+'/' + preset + '/' + path
+ 
+@@ -94,23 +110,23 @@ class Config:
+       #gc.set_float(path, default)
+     return rv
+ 
++  def change_enabled(self, enabled, eq):
++    self.enabled = enabled
++    self.apply_settings(eq)
++    self._write_enabled()
++
+   def change_preset(self, new_preset, eq):
+-    if new_preset:
+-      m_preset = self.mangle(new_preset)
+-    else:
++    if not new_preset:
+       return
+ 
+-    if self.preset_exists(m_preset):
+-      self.preset = self.mangle(m_preset)
++    self.preset = self.mangle(new_preset)
++
++    if self.preset_exists(self.preset):
+       self.read_settings(self.preset)
+       self.apply_settings(eq)
+     else:
+       Gst.Preset.load_preset(eq, new_preset)
+-      self.gconf.set_string(EQUALIZER_GCONF_PREFIX+'/'+EQUALIZER_PRESET, m_preset)
+-      self.config = list(eq.get_property('band' + str(i)) for i in range(0,10))
+-      for i in range(0, 10):
+-        self.gconf.set_float(self.make_path(self.gconf_keys[i], m_preset), self.config[i]) 
+-      self.preset = self.mangle(m_preset)
++      self.write_settings()
+ 
+   def preset_exists(self, preset):
+     return self.gconf.dir_exists(self.mangle(EQUALIZER_GCONF_PREFIX + '/' + preset))
+diff --git a/equalizer/ConfDialog.py b/equalizer/ConfDialog.py
+index 3e60ce0..dfa60dc 100644
+--- a/equalizer/ConfDialog.py
++++ b/equalizer/ConfDialog.py
+@@ -28,6 +28,7 @@ ui_string="""
+     <menu name="ControlMenu" action="Control"> 
+       <placeholder name="PluginPlaceholder">
+         <menuitem name="Equalizer" action="Equalize"/>
++        <menuitem name="Enable Equalizer" action="equalizer-enabled"/>
+       </placeholder>
+     </menu>
+   </menubar>
+@@ -133,14 +134,25 @@ class ConfDialog(object):
+ 
+     def add_ui(self, shell):
+         action_group = ActionGroup(shell, 'EqualizerActionGroup')
++
+         action_group.add_action(func=self.show_ui,
+             action_name='Equalize', label=_('_Equalizer'),
+             action_type='app')
+ 
++        action_group.add_action(func=self.toggle_enabled,
++            action_name='equalizer-enabled', label=_("E_nable Equalizer"),
++            action_type='app',
++            action_value=self.conf.enabled,
++            action_state = ActionGroup.TOGGLE)
++
+         self._appshell = ApplicationShell(shell)
+         self._appshell.insert_action_group(action_group)
+         self._appshell.add_app_menuitems(ui_string, 'EqualizerActionGroup')
+         
++    def toggle_enabled(self, *args):
++        enabled = not self.conf.enabled
++        self.conf.change_enabled(enabled, self.eq)
++
+     def show_ui(self, *args):
+         self.read_presets()
+         self.get_dialog().present()
+diff --git a/equalizer/equalizer_rb3compat.py b/equalizer/equalizer_rb3compat.py
+index 0550fe5..d57095a 100644
+--- a/equalizer/equalizer_rb3compat.py
++++ b/equalizer/equalizer_rb3compat.py
+@@ -461,6 +461,7 @@ class ActionGroup(object):
+         key value of "action_type" is the RB2.99 Gio.Action type ("win" or "app")
+            by default it assumes all actions are "win" type
+         key value of "action_state" determines what action state to create
++        key value of "action_value" determines initial action value for the TOGGLE type
+         '''
+         if 'label' in args:
+             label = args['label']
+@@ -475,11 +476,13 @@ class ActionGroup(object):
+         state = ActionGroup.STANDARD            
+         if 'action_state' in args:
+             state = args['action_state']
++
++        action_value = args.get('action_value', False)
+         
+         if is_rb3(self.shell):
+             if state == ActionGroup.TOGGLE:
+                 action = Gio.SimpleAction.new_stateful(action_name, None,
+-                                               GLib.Variant('b', False))
++                                               GLib.Variant('b', action_value))
+             else:
+                 action = Gio.SimpleAction.new(action_name, None)
+ 
+@@ -508,6 +511,7 @@ class ActionGroup(object):
+                 action = Gtk.ToggleAction(label=label,
+                     name=action_name,
+                    tooltip='', stock_id=stock_id)
++                action.set_active(action_value)
+             else:
+                 action = Gtk.Action(label=label,
+                     name=action_name,
+-- 
+2.9.0
+

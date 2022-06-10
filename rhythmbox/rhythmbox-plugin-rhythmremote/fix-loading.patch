@@ -1,0 +1,22 @@
+From 508510f681d282a2614f499d1bfa142c5b9fed10 Mon Sep 17 00:00:00 2001
+From: Danny Schmarsel <danny@schmarsel.de>
+Date: Fri, 5 Aug 2016 23:47:45 +0200
+Subject: [PATCH] Prevent module from occasionally not loading
+
+Works fine on Rhythmbox 3.3.1.
+---
+ rhythmremote.plugin | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/rhythmremote.plugin b/rhythmremote.plugin
+index cfa28f1..7e8df91 100644
+--- a/rhythmremote.plugin
++++ b/rhythmremote.plugin
+@@ -4,6 +4,7 @@ Module=rhythmremote
+ IAge=2
+ Name=RhythmRemote
+ Description=A mobile web interface for Rhythmbox.
++Depends=rb
+ Authors=James B. Smith <james.smith@bellaliant.net>, Christian Ertler <github@ertler.org>
+ Copyright=Copyright © 2012 Christian Ertler modified by James B. Smith 2015
+ Website=https://github.com/jamesbsmith/rhythmbox-rhythmremote

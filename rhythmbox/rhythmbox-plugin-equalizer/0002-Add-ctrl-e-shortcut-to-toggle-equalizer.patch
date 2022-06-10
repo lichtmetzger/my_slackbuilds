@@ -1,0 +1,42 @@
+From 33bdbec7daa219b386e51d45e504f8b6ad15eb3e Mon Sep 17 00:00:00 2001
+From: Tim Cuthbertson <tim@gfxmonk.net>
+Date: Mon, 29 Aug 2016 21:17:41 +1000
+Subject: [PATCH 2/2] Add <ctrl>e shortcut to toggle equalizer
+
+---
+ equalizer/ConfDialog.py          | 3 ++-
+ equalizer/equalizer_rb3compat.py | 2 +-
+ 2 files changed, 3 insertions(+), 2 deletions(-)
+
+diff --git a/equalizer/ConfDialog.py b/equalizer/ConfDialog.py
+index dfa60dc..9a63107 100644
+--- a/equalizer/ConfDialog.py
++++ b/equalizer/ConfDialog.py
+@@ -139,9 +139,10 @@ class ConfDialog(object):
+             action_name='Equalize', label=_('_Equalizer'),
+             action_type='app')
+ 
+-        action_group.add_action(func=self.toggle_enabled,
++        action_group.add_action_with_accel(func=self.toggle_enabled,
+             action_name='equalizer-enabled', label=_("E_nable Equalizer"),
+             action_type='app',
++            accel='<ctrl>e',
+             action_value=self.conf.enabled,
+             action_state = ActionGroup.TOGGLE)
+ 
+diff --git a/equalizer/equalizer_rb3compat.py b/equalizer/equalizer_rb3compat.py
+index d57095a..af267c7 100644
+--- a/equalizer/equalizer_rb3compat.py
++++ b/equalizer/equalizer_rb3compat.py
+@@ -500,7 +500,7 @@ class ActionGroup(object):
+                 self.actiongroup.add_action(action)
+ 
+             if accel:
+-                app.add_accelerator(accel, action_type+"."+action_name, None)
++                app.set_accels_for_action(action_type+"."+action_name, [accel])
+         else:
+             if 'stock_id' in args:
+                 stock_id = args['stock_id']
+-- 
+2.9.0
+

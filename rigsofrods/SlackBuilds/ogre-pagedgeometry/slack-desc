@@ -1,0 +1,19 @@
+# HOW TO EDIT THIS FILE:
+# The "handy ruler" below makes it easier to edit a package description.  Line
+# up the first '|' above the ':' following the base package name, and the '|'
+# on the right side marks the last column you can put a character in.  You must
+# make exactly 11 lines for the formatting to be correct.  It's also
+# customary to leave one space after the ':'.
+
+          |-----handy-ruler------------------------------------------------------|
+ogre-pagedgeometry: ogre-pagedgeometry ( Real-time rendering of massive, dense forests )
+ogre-pagedgeometry:
+ogre-pagedgeometry: Real-time rendering of massive, dense forests, with not only trees,
+ogre-pagedgeometry: but bushes, grass, rocks, and other "clutter".
+ogre-pagedgeometry: Supports dynamic transitioned LOD between batched geometry
+ogre-pagedgeometry: and static impostors (extendable). 
+ogre-pagedgeometry:
+ogre-pagedgeometry:
+ogre-pagedgeometry:
+ogre-pagedgeometry:
+ogre-pagedgeometry:

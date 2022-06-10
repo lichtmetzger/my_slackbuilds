@@ -1,0 +1,23 @@
+<p><h1>Rhythmbox for Slackware64-current</h1></p>
+<p>Either add this to slapt-getrc:</p>
+<pre>SOURCE=https://schmatzler.de/my_slackbuilds/rhythmbox/:OFFICIAL</pre>
+<p>Install the packages:</p>
+<pre>slapt-get --install avahi BeautifulSoup bottle brasero clutter clutter-gst clutter-gtk cogl dbus-python3 gst-plugins-bad gst-plugins-ugly hyphen json-glib lame libburn libdaemon libdmapsharing libisofs libmodplug libmusicbrainz3 libpeas lxml mx py3cairo pygobject3-python3 python3 rhythmbox rhythmbox-plugin-alternative-toolbar rhythmbox-plugin-ampache rhythmbox-plugin-android-remote rhythmbox-plugin-equalizer rhythmbox-plugin-hide rhythmbox-plugin-lastfmplaycount rhythmbox-plugin-llyrics rhythmbox-plugin-opencontainingfolder rhythmbox-plugin-radio-browser rhythmbox-plugin-ratingfilters rhythmbox-plugin-rbtempo rhythmbox-plugin-rhythmremote rhythmbox-plugin-rhythmweb rhythmbox-plugin-rtr rhythmbox-plugin-spectrum rhythmbox-plugin-tray-icon rhythmbox-plugin-wikipedia-search rhythmbox-plugin-youtube-search soundtouch totem-pl-parser vala</pre>
+---
+<p>Or edit <i>/etc/slackpkg/slackpkgplus.conf</i> and make sure you <b>alter</b> REPOPLUS and <b>add</b> MIRRORPLUS to create a new repository 'rhythmbox':</p>
+<pre>REPOPLUS=( slackpkgplus rhythmbox )
+MIRRORPLUS['rhythmbox']=https://schmatzler.de/my_slackbuilds/rhythmbox/</pre>
+<p>Then install it:</p>
+<pre>slackpkg install rhythmbox</pre>
+<p>If you want to use the dark theme, edit /etc/gtk-3.0/settings.ini and add</p>
+<pre>
+[Settings]
+gtk-application-prefer-dark-theme = true
+</pre>
+<p>For Avahi to work, you need to create a new user:</p>
+<pre>
+groupadd -g 214 avahi
+useradd -u 214 -g 214 -c "Avahi" -d /dev/null -s /bin/false avahi
+</pre>
+<br />
+<p><a href="http://www.linuxquestions.org/questions/slackware-14/rhythmbox-repository-for-slackware64-14-2-a-4175585161/">Discussion on Linuxquestions.org</a></p>

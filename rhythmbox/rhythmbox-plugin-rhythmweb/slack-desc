@@ -1,0 +1,15 @@
+# HOW TO EDIT THIS FILE:
+# The "handy ruler" below makes it easier to edit a package description.
+# Line up the first '|' above the ':' following the base package name, and
+# the '|' on the right side marks the last column you can put a character in.
+# You must make exactly 11 lines for the formatting to be correct.  It's also
+# customary to leave one space after the ':' except on otherwise blank lines.
+
+         |-----handy-ruler------------------------------------------------------|
+rhythmbox-plugin-rhythmweb: rhythmbox-plugin-rhythmweb (webinterface for rhythmbox)
+rhythmbox-plugin-rhythmweb:
+rhythmbox-plugin-rhythmweb: 
+rhythmbox-plugin-rhythmweb: rhythmbox v2.9x/v3.x GTK3 port of the original rhythmweb
+rhythmbox-plugin-rhythmweb: GTK2 plugin created previously for rhythmbox v0.1x
+rhythmbox-plugin-rhythmweb:
+rhythmbox-plugin-rhythmweb:
